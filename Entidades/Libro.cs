@@ -5,12 +5,13 @@ using System.Threading.Tasks;
 
 namespace WebApiAutores.Entidades
 {
-    public class Autor
+    public class Libro
     {
         public int Id { get; set; }
-        public string Nombre { get; set; }
+        public string Titulo { get; set; }
+        public int AutorId { get; set; }
 
-        // propiedad de navegacion
-        public List<Libro> Libros { get; set; }
+        //propiedad de navegacion
+        public Autor Autor { get; set; }
     }
 }
