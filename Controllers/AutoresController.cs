@@ -11,6 +11,7 @@ namespace WebApiAutores.Controllers
     // permite hacer validaciones automaticas a la informacion que reciba este controlador
     [ApiController]
     [Route("api/autores")]
+    // [Route("api/[controller]")] otra opcion para que este placeholder controller se modifique con el nombre del controlador
     public class AutoresController : ControllerBase
     {
         private readonly ApplicationDbContext context;
@@ -20,7 +21,8 @@ namespace WebApiAutores.Controllers
             this.context = context;
         }
 
-        [HttpGet]
+        [HttpGet] // api/autores
+        [HttpGet("/listado")] // /listado
         public async Task<ActionResult<List<Autor>>> Get()
         {
             return await context.Autores.Include(x => x.Libros).ToListAsync();
