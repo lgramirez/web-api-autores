@@ -26,6 +26,12 @@ namespace WebApiAutores.Controllers
             return await context.Autores.Include(x => x.Libros).ToListAsync();
         }
 
+        [HttpGet("primero")] // api/autores/primero
+        public async Task<ActionResult<Autor>> PrimerAutor()
+        {
+            return await context.Autores.FirstOrDefaultAsync();
+        }
+
         [HttpPost]
         // usamos async para trabajar mas eficientemente las conexiones con la DB
         // y devolvemos un Task<ActionResult> porque es un requisito para metodos asincronos
