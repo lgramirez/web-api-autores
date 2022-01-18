@@ -65,6 +65,14 @@ namespace WebApiAutores.Controllers
         // y devolvemos un Task<ActionResult> porque es un requisito para metodos asincronos
         public async Task<ActionResult> Post(Autor autor)
         {
+            // validacion para evitar que se agreguen autores con el mismo nombre
+            var existeAutorConElMismoNombre = await context.Autores.AnyAsync(x => x.Nombre == autor.Nombre);
+
+            if (existeAutorConElMismoNombre)
+            {
+                return BadRequest($"Ya existe un autor con el nombre {autor.Nombre}");
+            }
+
             context.Add(autor);
             await context.SaveChangesAsync();
             return Ok();

@@ -21,7 +21,10 @@ namespace WebApiAutores.Entidades
         [NotMapped]
         public int Edad { get; set; }
 
+        [NotMapped]
         public int Menor { get; set; }
+
+        [NotMapped]
         public int Mayor { get; set; }
 
         // propiedad de navegacion
