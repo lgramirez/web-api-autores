@@ -15,16 +15,19 @@ namespace WebApiAutores.Controllers
     public class AutoresController : ControllerBase
     {
         private readonly ApplicationDbContext context;
+        private readonly ILogger<AutoresController> logger;
 
-        public AutoresController(ApplicationDbContext context)
+        public AutoresController(ApplicationDbContext context, ILogger<AutoresController> logger)
         {
             this.context = context;
+            this.logger = logger;
         }
 
         [HttpGet] // api/autores
         [HttpGet("/listado")] // /listado
         public async Task<ActionResult<List<Autor>>> Get()
         {
+            logger.LogInformation("Estamos obteniendo los autores");
             return await context.Autores.Include(x => x.Libros).ToListAsync();
         }
 
