@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using WebApiAutores.Filtros;
 using WebAPIAutores.Middlewares;
 
 namespace WebApiAutores
@@ -25,6 +26,8 @@ namespace WebApiAutores
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
+
+            services.AddTransient<MiFiltroDeAccion>();
 
             services.AddResponseCaching();
 

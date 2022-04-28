@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApiAutores.Entidades;
+using WebApiAutores.Filtros;
 
 namespace WebApiAutores.Controllers
 {
@@ -26,6 +27,8 @@ namespace WebApiAutores.Controllers
 
         [HttpGet] // api/autores
         [HttpGet("/listado")] // /listado
+        // usamos nuestro custom filter
+        [ServiceFilter(typeof(MiFiltroDeAccion))]
         public async Task<ActionResult<List<Autor>>> Get()
         {
             logger.LogInformation("Estamos obteniendo los autores");
