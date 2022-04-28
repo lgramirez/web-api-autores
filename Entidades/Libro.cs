@@ -12,9 +12,5 @@ namespace WebApiAutores.Entidades
 
         [PrimeraLetraMayuscula]
         public string Titulo { get; set; }
-        public int AutorId { get; set; }
-
-        //propiedad de navegacion
-        public Autor Autor { get; set; }
     }
 }

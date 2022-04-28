@@ -1,8 +1,6 @@
 using System.Text.Json.Serialization;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using WebApiAutores.Filtros;
-using WebApiAutores.Servicios;
 using WebAPIAutores.Middlewares;
 
 namespace WebApiAutores
@@ -31,32 +29,12 @@ namespace WebApiAutores
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
 
-            services.AddTransient<MiFiltroDeAccion>();
-
-            services.AddHostedService<EscribirEnArchivo>();
-
-            services.AddResponseCaching();
-
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
         {
-
-            //app.UseMiddleware<LoguearRespuestaHTTPMiddleware>();
-
             // con la clase estatica nos queda asi
             app.UseLoguearRespuestaHTTP();
-
-            // este metodo es para decir que solo en esta ruta se ejecuta este middleware
-            // app.Map("/ruta1", app =>
-            // {
-            //     // este metodo hace que sea el unico middleware que se ejecuta e intercepta todo
-            //     app.Run(async contexto =>
-            //     {
-            //         await contexto.Response.WriteAsync("Estoy interceptando la tuberia.");
-            //     });
-            // });
 
             if (env.IsDevelopment())
             {
@@ -67,8 +45,6 @@ namespace WebApiAutores
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
-            app.UseResponseCaching();
 
             app.UseAuthorization();
 

@@ -25,16 +25,6 @@ namespace WebApiAutores.Controllers
             this.logger = logger;
         }
 
-        [HttpGet] // api/autores
-        [HttpGet("/listado")] // /listado
-        // usamos nuestro custom filter
-        [ServiceFilter(typeof(MiFiltroDeAccion))]
-        public async Task<ActionResult<List<Autor>>> Get()
-        {
-            logger.LogInformation("Estamos obteniendo los autores");
-            return await context.Autores.Include(x => x.Libros).ToListAsync();
-        }
-
         [HttpGet("primero")] // api/autores/primero
         // con este filtro habilitamos el cache para este metodo, lo que hace es 
         // que la primera llamada a este endpoint todo respondera como deberia ser,
@@ -63,7 +53,6 @@ namespace WebApiAutores.Controllers
         [HttpGet("{nombre}")]
         public async Task<ActionResult<Autor>> Get(string nombre)
         {
-            throw new NotImplementedException();
             var autor = await context.Autores.FirstOrDefaultAsync(x => x.Nombre.Contains(nombre));
 
             if (autor == null)

@@ -19,25 +19,25 @@ namespace WebApiAutores.Controllers
             this.context = context;
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Libro>> Get(int id)
-        {
-            return await context.Libros.Include(x => x.Autor).FirstOrDefaultAsync();
-        }
+        // [HttpGet("{id}")]
+        // public async Task<ActionResult<Libro>> Get(int id)
+        // {
+        //     return await context.Libros.Include(x => x.Autor).FirstOrDefaultAsync();
+        // }
 
-        [HttpPost]
-        public async Task<ActionResult> Post(Libro libro)
-        {
-            var existeAutor = await context.Autores.AnyAsync();
+        // [HttpPost]
+        // public async Task<ActionResult> Post(Libro libro)
+        // {
+        //     var existeAutor = await context.Autores.AnyAsync();
 
-            if (!existeAutor)
-            {
-                return BadRequest($"No existe el autor de ID: {libro.AutorId}");
-            }
+        //     if (!existeAutor)
+        //     {
+        //         return BadRequest($"No existe el autor de ID: {libro.AutorId}");
+        //     }
 
-            context.Add(libro);
-            await context.SaveChangesAsync();
-            return Ok();
-        }
+        //     context.Add(libro);
+        //     await context.SaveChangesAsync();
+        //     return Ok();
+        // }
     }
 }
