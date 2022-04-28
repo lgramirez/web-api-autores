@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using WebApiAutores.Filtros;
+using WebApiAutores.Servicios;
 using WebAPIAutores.Middlewares;
 
 namespace WebApiAutores
@@ -31,6 +32,8 @@ namespace WebApiAutores
             services.AddSwaggerGen();
 
             services.AddTransient<MiFiltroDeAccion>();
+
+            services.AddHostedService<EscribirEnArchivo>();
 
             services.AddResponseCaching();
 
