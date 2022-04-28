@@ -32,6 +32,10 @@ namespace WebApiAutores.Controllers
         }
 
         [HttpGet("primero")] // api/autores/primero
+        // con este filtro habilitamos el cache para este metodo, lo que hace es 
+        // que la primera llamada a este endpoint todo respondera como deberia ser,
+        // pero las sgts llamadas dentro de los 10s sacaran la informacion del cache
+        [ResponseCache(Duration = 10)]
         public async Task<ActionResult<Autor>> PrimerAutor()
         {
             return await context.Autores.FirstOrDefaultAsync();
