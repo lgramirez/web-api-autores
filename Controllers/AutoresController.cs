@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApiAutores.Entidades;
@@ -36,6 +37,8 @@ namespace WebApiAutores.Controllers
         // que la primera llamada a este endpoint todo respondera como deberia ser,
         // pero las sgts llamadas dentro de los 10s sacaran la informacion del cache
         [ResponseCache(Duration = 10)]
+        // este filtro se usa para autorizar que no todos usen este endpoint
+        [Authorize]
         public async Task<ActionResult<Autor>> PrimerAutor()
         {
             return await context.Autores.FirstOrDefaultAsync();
