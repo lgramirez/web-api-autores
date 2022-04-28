@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
+using WebAPIAutores.Middlewares;
 
 namespace WebApiAutores
 {
@@ -28,29 +29,10 @@ namespace WebApiAutores
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
         {
 
-            app.Use(async (contexto, siguiente) =>
-            {
-                using (var ms = new MemoryStream())
-                {
-                    var cuerpoOriginalRespuesta = contexto.Response.Body;
-                    contexto.Response.Body = ms;
+            //app.UseMiddleware<LoguearRespuestaHTTPMiddleware>();
 
-                    // con este metodo pasamos al siguiente middleware
-                    await siguiente.Invoke();
-
-                    // despues del invoke se hara todo lo siguiente cuando los middlewares esten volviendo a este middleware
-                    // para finalizar la cadena de procesos
-
-                    ms.Seek(0, SeekOrigin.Begin);
-                    string respuesta = new StreamReader(ms).ReadToEnd();
-                    ms.Seek(0, SeekOrigin.Begin);
-
-                    await ms.CopyToAsync(cuerpoOriginalRespuesta);
-                    contexto.Response.Body = cuerpoOriginalRespuesta;
-
-                    logger.LogInformation(respuesta);
-                }
-            });
+            // con la clase estatica nos queda asi
+            app.UseLoguearRespuestaHTTP();
 
             // este metodo es para decir que solo en esta ruta se ejecuta este middleware
             // app.Map("/ruta1", app =>
