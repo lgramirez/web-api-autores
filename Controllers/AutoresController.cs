@@ -63,6 +63,7 @@ namespace WebApiAutores.Controllers
         [HttpGet("{nombre}")]
         public async Task<ActionResult<Autor>> Get(string nombre)
         {
+            throw new NotImplementedException();
             var autor = await context.Autores.FirstOrDefaultAsync(x => x.Nombre.Contains(nombre));
 
             if (autor == null)
