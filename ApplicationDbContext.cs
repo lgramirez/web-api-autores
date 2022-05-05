@@ -18,6 +18,7 @@ namespace WebApiAutores
         // le a EF que cree una tabla llamada Autores con el modelo Autor
         public DbSet<Autor> Autores { get; set; }
         public DbSet<Libro> Libros { get; set; }
+        public DbSet<Comentario> Comentarios { get; set; }
 
         // para crear una migracion
         // dotnet ef migrations add Inicial
@@ -25,5 +26,8 @@ namespace WebApiAutores
 
         // para correr la migracion
         // dotnet ef database update
+
+        // para crear una migracion para los comentarios
+        // dotnet ef migrations add Comentarios
     }
 }

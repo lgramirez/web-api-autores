@@ -10,8 +10,12 @@ namespace WebApiAutores.Entidades
     public class Libro
     {
         public int Id { get; set; }
+        [Required]
         [PrimeraLetraMayuscula]
         [StringLength(maximumLength: 250)]
         public string Titulo { get; set; }
+
+        // propiedad de navegacion para los comentarios
+        public List<Comentario> Comentarios { get; set; }
     }
 }
