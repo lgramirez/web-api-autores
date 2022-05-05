@@ -1,3 +1,4 @@
+using AutoMapper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -5,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApiAutores.Entidades;
+using WebApiAutores.DTOs;
 
 namespace WebApiAutores.Controllers
 {
@@ -13,31 +15,36 @@ namespace WebApiAutores.Controllers
     public class LibrosController : ControllerBase
     {
         private readonly ApplicationDbContext context;
+        private readonly IMapper mapper;
 
-        public LibrosController(ApplicationDbContext context)
+        public LibrosController(ApplicationDbContext context, IMapper mapper)
         {
             this.context = context;
+            this.mapper = mapper;
         }
 
-        // [HttpGet("{id}")]
-        // public async Task<ActionResult<Libro>> Get(int id)
-        // {
-        //     return await context.Libros.Include(x => x.Autor).FirstOrDefaultAsync();
-        // }
+        [HttpGet("{id}")]
+        public async Task<ActionResult<LibroDTO>> Get(int id)
+        {
+            var libro = await context.Libros.FirstOrDefaultAsync(x => x.Id == id);
+            return mapper.Map<LibroDTO>(libro);
+        }
 
-        // [HttpPost]
-        // public async Task<ActionResult> Post(Libro libro)
-        // {
-        //     var existeAutor = await context.Autores.AnyAsync();
+        [HttpPost]
+        public async Task<ActionResult> Post(LibroCreacionDTO libroCreacionDTO)
+        {
+            // var existeAutor = await context.Autores.AnyAsync();
 
-        //     if (!existeAutor)
-        //     {
-        //         return BadRequest($"No existe el autor de ID: {libro.AutorId}");
-        //     }
+            // if (!existeAutor)
+            // {
+            //     return BadRequest($"No existe el autor de ID: {libro.AutorId}");
+            // }
+            
+            var libro = mapper.Map<Libro>(libroCreacionDTO);
 
-        //     context.Add(libro);
-        //     await context.SaveChangesAsync();
-        //     return Ok();
-        // }
+            context.Add(libro);
+            await context.SaveChangesAsync();
+            return Ok();
+        }
     }
 }
