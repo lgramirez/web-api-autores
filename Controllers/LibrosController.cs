@@ -23,9 +23,14 @@ namespace WebApiAutores.Controllers
             this.mapper = mapper;
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<ActionResult<LibroDTO>> Get(int id)
         {
+            // usamos el include para que se incluyan los comentarios en la respuesta del libro seleccionado
+            // pero en este caso lo dejaremos sin los comentarios para ser mas eficientes y solo usar el
+            // endpoint de comentarios para traer los comentarios de un libro
+            // al incluir el .Include debemos tambien modificar el DTO para que adicione la prop comentarios
+            // var libro = await context.Libros.Include(libroDB => libroDB.Comentarios).FirstOrDefaultAsync(x => x.Id == id);
             var libro = await context.Libros.FirstOrDefaultAsync(x => x.Id == id);
             return mapper.Map<LibroDTO>(libro);
         }
@@ -39,7 +44,7 @@ namespace WebApiAutores.Controllers
             // {
             //     return BadRequest($"No existe el autor de ID: {libro.AutorId}");
             // }
-            
+
             var libro = mapper.Map<Libro>(libroCreacionDTO);
 
             context.Add(libro);

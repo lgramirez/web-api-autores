@@ -9,5 +9,8 @@ namespace WebApiAutores.DTOs
     {
         public int Id { get; set; }
         public string Titulo { get; set; }
-    }   
+        
+        // debemos agregar esta propiedad si queremos que se muestren los comentarios de un libro
+        //public List<ComentarioDTO> Comentarios { get; set; }
+    }
 }
