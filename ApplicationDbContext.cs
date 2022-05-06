@@ -15,10 +15,21 @@ namespace WebApiAutores
         {
         }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            // configuracion especial para que la entidad AutorLibro
+            // tenga una llave compuesta con AutorId y LibroId
+            modelBuilder.Entity<AutorLibro>().HasKey(autorLibro => new { autorLibro.AutorId, autorLibro.LibroId });
+
+        }
+
         // le a EF que cree una tabla llamada Autores con el modelo Autor
         public DbSet<Autor> Autores { get; set; }
         public DbSet<Libro> Libros { get; set; }
         public DbSet<Comentario> Comentarios { get; set; }
+        public DbSet<AutorLibro> AutoresLibros { get; set; }
 
         // para crear una migracion
         // dotnet ef migrations add Inicial
