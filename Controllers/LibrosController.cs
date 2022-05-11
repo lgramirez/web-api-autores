@@ -31,7 +31,11 @@ namespace WebApiAutores.Controllers
             // endpoint de comentarios para traer los comentarios de un libro
             // al incluir el .Include debemos tambien modificar el DTO para que adicione la prop comentarios
             // var libro = await context.Libros.Include(libroDB => libroDB.Comentarios).FirstOrDefaultAsync(x => x.Id == id);
-            var libro = await context.Libros.FirstOrDefaultAsync(x => x.Id == id);
+            var libro = await context.Libros.Include(libroDB => libroDB.AutoresLibros).ThenInclude(autorLibroDB => autorLibroDB.Autor).FirstOrDefaultAsync(x => x.Id == id);
+
+            // ordenar segun el campo orden
+            libro.AutoresLibros = libro.AutoresLibros.OrderBy(x => x.Orden).ToList();
+
             return mapper.Map<LibroDTO>(libro);
         }
 
