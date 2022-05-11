@@ -17,11 +17,28 @@ namespace WebAPIAutores.Utilidades
             CreateMap<AutorCreacionDTO, Autor>();
             CreateMap<Autor, AutorDTO>();
 
-            CreateMap<LibroCreacionDTO, Libro>();
+            // creamos una regla especial para el atributo AutoresLibros de la entidad libros, estamos configurando el mapeo
+            // a la propiedad AutoresLibros
+            CreateMap<LibroCreacionDTO, Libro>().ForMember(libro => libro.AutoresLibros, opciones => opciones.MapFrom(MapAutoresLibros));
             CreateMap<Libro, LibroDTO>();
 
             CreateMap<ComentarioCreacionDTO, Comentario>();
             CreateMap<Comentario, ComentarioDTO>();
+        }
+
+        // logica para mapear desde un entero hacia AutoresLibros
+        private List<AutorLibro> MapAutoresLibros(LibroCreacionDTO libroCreacionDTO, Libro libro)
+        {
+            var resultado = new List<AutorLibro>();
+
+            if (libroCreacionDTO.AutoresIds == null) { return resultado; }
+
+            foreach (var autorId in libroCreacionDTO.AutoresIds)
+            {
+                resultado.Add(new AutorLibro() { AutorId = autorId });
+            }
+
+            return resultado;
         }
     }
 }

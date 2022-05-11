@@ -17,6 +17,6 @@ namespace WebApiAutores.Entidades
 
         // propiedad de navegacion para los comentarios
         public List<Comentario> Comentarios { get; set; }
-        public List<AutorLibro> AutorLibro { get; set; }
+        public List<AutorLibro> AutoresLibros { get; set; }
     }
 }
