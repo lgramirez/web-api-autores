@@ -48,7 +48,7 @@ namespace WebApiAutores.Controllers
             return mapper.Map<List<AutorDTO>>(autores);
         }
 
-        [HttpGet("{id:int}")]
+        [HttpGet("{id:int}", Name = "ObtenerAutor")]
         public async Task<ActionResult<AutorDTOConLibros>> Get(int id)
         {
             var autor = await context.Autores
@@ -96,7 +96,15 @@ namespace WebApiAutores.Controllers
 
             context.Add(autor);
             await context.SaveChangesAsync();
-            return Ok();
+
+            var autorDTO = mapper.Map<AutorDTO>(autor);
+
+            // con el siguiente metodo retornamos los valores esperados con las buenas practicas para
+            // un POST request de un API que son: 1. la ruta donde puedo obtener la informacion del autor
+            // creado, 2. y retonamos la informacion del autor creado
+            // este metodo recibe 3 params: 1. el nombre de la ruta que usaremos, 2. le mandamos el param
+            // que necesita esta ruta y 3. los datos del autor creado
+            return CreatedAtRoute("ObtenerAutor", new { id = autor.Id }, autorDTO);
         }
 
         [HttpPut("{id:int}")] // api/autores/1
