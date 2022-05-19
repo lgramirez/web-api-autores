@@ -48,10 +48,13 @@ namespace WebApiAutores.Controllers
             return mapper.Map<List<AutorDTO>>(autores);
         }
 
-        [HttpGet("{id:int}/{param=persona}")]
-        public async Task<ActionResult<AutorDTO>> Get(int id, string param)
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<AutorDTO>> Get(int id)
         {
-            var autor = await context.Autores.FirstOrDefaultAsync(x => x.Id == id);
+            var autor = await context.Autores
+                .Include(autorDB => autorDB.AutoresLibros)
+                .ThenInclude(autorLibroDB => autorLibroDB.Libro)
+                .FirstOrDefaultAsync(x => x.Id == id);
 
             if (autor == null)
             {
@@ -81,10 +84,10 @@ namespace WebApiAutores.Controllers
             {
                 return BadRequest($"Ya existe un autor con el nombre {autorCreacionDTO.Nombre}");
             }
-            
+
             // en este caso le estoy pasando como param un autorCreacionDTO para convertirlo en Autor
             var autor = mapper.Map<Autor>(autorCreacionDTO);
-            
+
             // es una forma de solucionar el problema de que tenemos que mandar un autor a context.add()
             // var autor = new Autor()
             // {

@@ -15,7 +15,8 @@ namespace WebAPIAutores.Utilidades
             // el primer param es de donde a donde quiero mapear
             // en este caso de AutorCreacionDTO a Autor
             CreateMap<AutorCreacionDTO, Autor>();
-            CreateMap<Autor, AutorDTO>();
+            CreateMap<Autor, AutorDTO>()
+                .ForMember(autorDTO => autorDTO.Libros, opciones => opciones.MapFrom(MapAutorDTOLibros));
 
             // creamos una regla especial para el atributo AutoresLibros de la entidad libros,
             // estamos configurando el mapeo a la propiedad AutoresLibros
@@ -25,6 +26,24 @@ namespace WebAPIAutores.Utilidades
 
             CreateMap<ComentarioCreacionDTO, Comentario>();
             CreateMap<Comentario, ComentarioDTO>();
+        }
+
+        private List<LibroDTO> MapAutorDTOLibros(Autor autor, AutorDTO autorDTO)
+        {
+            var resultado = new List<LibroDTO>();
+
+            if (autor.AutoresLibros == null) { return resultado; }
+
+            foreach (var autorLibro in autor.AutoresLibros)
+            {
+                resultado.Add(new LibroDTO()
+                {
+                    Id = autorLibro.LibroId,
+                    Titulo = autorLibro.Libro.Titulo
+                });
+            }
+
+            return resultado;
         }
 
         // logica para mapear de un autorLibro a un Autor para el libroDTO
@@ -42,7 +61,7 @@ namespace WebAPIAutores.Utilidades
                     Nombre = autorLibro.Autor.Nombre
                 });
             }
-            
+
             return resultado;
         }
 
