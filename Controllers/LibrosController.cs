@@ -24,7 +24,7 @@ namespace WebApiAutores.Controllers
         }
 
         [HttpGet("{id:int}")]
-        public async Task<ActionResult<LibroDTO>> Get(int id)
+        public async Task<ActionResult<LibroDTOConAutores>> Get(int id)
         {
             // usamos el include para que se incluyan los comentarios en la respuesta del libro seleccionado
             // pero en este caso lo dejaremos sin los comentarios para ser mas eficientes y solo usar el
@@ -36,7 +36,7 @@ namespace WebApiAutores.Controllers
             // ordenar segun el campo orden
             libro.AutoresLibros = libro.AutoresLibros.OrderBy(x => x.Orden).ToList();
 
-            return mapper.Map<LibroDTO>(libro);
+            return mapper.Map<LibroDTOConAutores>(libro);
         }
 
         [HttpPost]
