@@ -58,13 +58,7 @@ namespace WebApiAutores.Controllers
 
             var libro = mapper.Map<Libro>(libroCreacionDTO);
 
-            if (libro.AutoresLibros != null)
-            {
-                for (int i = 0; i < libro.AutoresLibros.Count; i++)
-                {
-                    libro.AutoresLibros[i].Orden = i;
-                }
-            }
+            AsignarOrdenAutores(libro);
 
             context.Add(libro);
             await context.SaveChangesAsync();
@@ -72,6 +66,41 @@ namespace WebApiAutores.Controllers
             var libroDTO = mapper.Map<LibroDTO>(libro);
 
             return CreatedAtRoute("ObtenerLibro", new { id = libro.Id }, libroDTO);
+        }
+
+        [HttpPut("{id:int}")]
+        public async Task<ActionResult> Put(int id, LibroCreacionDTO libroCreacionDTO)
+        {
+            // traemos el libro de la DB que tiene el id que estamos recibiendo por parametro
+            // y tambien estamos incluyendo el listado de autoresLibros para poder actualizarlo
+            // ya sea creando, eliminando o modificando el orden de los autores
+            var libroDB = await context.Libros.Include(x => x.AutoresLibros).FirstOrDefaultAsync(x => x.Id == id);
+
+            if (libroDB == null)
+            {
+                return NotFound();
+            }
+
+            // vamos a usar automapper para llevar las propiedades de libroCreacionDTO a libroDB
+            // y se va a hacer una actualizacion de libroDB y lo asignamos a libroDB para mantener
+            // la misma instancia creada al principio, asi nos permite actualizar la entidad libro y
+            // tambien autoresLibros sin tener que hacer mucho
+            libroDB = mapper.Map(libroCreacionDTO, libroDB);
+            AsignarOrdenAutores(libroDB);
+
+            await context.SaveChangesAsync();
+            return NoContent();
+        }
+
+        private void AsignarOrdenAutores(Libro libro)
+        {
+            if (libro.AutoresLibros != null)
+            {
+                for (int i = 0; i < libro.AutoresLibros.Count; i++)
+                {
+                    libro.AutoresLibros[i].Orden = i;
+                }
+            }
         }
     }
 }
