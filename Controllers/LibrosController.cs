@@ -34,6 +34,11 @@ namespace WebApiAutores.Controllers
             // var libro = await context.Libros.Include(libroDB => libroDB.Comentarios).FirstOrDefaultAsync(x => x.Id == id);
             var libro = await context.Libros.Include(libroDB => libroDB.AutoresLibros).ThenInclude(autorLibroDB => autorLibroDB.Autor).FirstOrDefaultAsync(x => x.Id == id);
 
+            if (libro == null)
+            {
+                return NotFound();
+            }
+
             // ordenar segun el campo orden
             libro.AutoresLibros = libro.AutoresLibros.OrderBy(x => x.Orden).ToList();
 
@@ -134,6 +139,23 @@ namespace WebApiAutores.Controllers
             }
 
             mapper.Map(libroDTO, libroDB);
+            await context.SaveChangesAsync();
+            return NoContent();
+        }
+
+        // al borrar el libro se borran las relaciones con autoresLibros y los comentarios
+        // que tenia este libro, pero se mantienen los autores que estaban relacionados al libro
+        [HttpDelete("{id:int}")]
+        public async Task<ActionResult> Delete(int id)
+        {
+            var existe = await context.Libros.AnyAsync(x => x.Id == id);
+
+            if (!existe)
+            {
+                return NotFound();
+            }
+
+            context.Remove(new Libro() { Id = id });
             await context.SaveChangesAsync();
             return NoContent();
         }
