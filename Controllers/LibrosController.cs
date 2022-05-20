@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApiAutores.Entidades;
 using WebApiAutores.DTOs;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace WebApiAutores.Controllers
 {
@@ -101,6 +102,40 @@ namespace WebApiAutores.Controllers
                     libro.AutoresLibros[i].Orden = i;
                 }
             }
+        }
+
+        [HttpPatch("{id:int}")]
+        public async Task<ActionResult> Patch(int id, JsonPatchDocument<LibroPatchDTO> patchDocument)
+        {
+            if (patchDocument == null)
+            {
+                return BadRequest();
+            }
+
+            var libroDB = await context.Libros.FirstOrDefaultAsync(x => x.Id == id);
+
+            if (libroDB == null)
+            {
+                return NotFound();
+            }
+
+            // llenar el libroPatchDTO con la informacion del libro de la DB
+            var libroDTO = mapper.Map<LibroPatchDTO>(libroDB);
+
+            // luego aplicamos a libroPatchDTO los cambios que vinieron de patchDocument
+            // por ejm el cambio del titulo
+            patchDocument.ApplyTo(libroDTO, ModelState);
+
+            var esValido = TryValidateModel(libroDTO);
+            // en el ModelState van a estar los errores de validacion encontrados
+            if (!esValido)
+            {
+                return BadRequest(ModelState);
+            }
+
+            mapper.Map(libroDTO, libroDB);
+            await context.SaveChangesAsync();
+            return NoContent();
         }
     }
 }

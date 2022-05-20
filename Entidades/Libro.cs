@@ -14,6 +14,9 @@ namespace WebApiAutores.Entidades
         [PrimeraLetraMayuscula]
         [StringLength(maximumLength: 250)]
         public string Titulo { get; set; }
+        
+        // ? hacemos la propiedad nullable
+        public DateTime? FechaPublicacion { get; set; }
 
         // propiedad de navegacion para los comentarios
         public List<Comentario> Comentarios { get; set; }
