@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using WebApiAutores.Entidades;
 using WebApiAutores.Filtros;
 using WebApiAutores.DTOs;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace WebApiAutores.Controllers
 {
@@ -42,6 +43,7 @@ namespace WebApiAutores.Controllers
         }
 
         [HttpGet] // api/autores
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<List<AutorDTO>> Get()
         {
             var autores = await context.Autores.ToListAsync();
