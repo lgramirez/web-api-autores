@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace WebApiAutores.DTOs
 {
-    public class CredencialUsuario
+    public class CredencialesUsuario
     {
         [Required]
         [EmailAddress]
