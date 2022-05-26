@@ -16,6 +16,7 @@ namespace WebApiAutores.Controllers
     // permite hacer validaciones automaticas a la informacion que reciba este controlador
     [ApiController]
     [Route("api/autores")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     // [Route("api/[controller]")] otra opcion para que este placeholder controller se modifique con el nombre del controlador
     public class AutoresController : ControllerBase
     {
@@ -43,7 +44,8 @@ namespace WebApiAutores.Controllers
         }
 
         [HttpGet] // api/autores
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        // permitimos que usuarios no autorizados puedan consumir este endpoint
+        [AllowAnonymous]
         public async Task<List<AutorDTO>> Get()
         {
             var autores = await context.Autores.ToListAsync();
