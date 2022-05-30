@@ -16,7 +16,7 @@ namespace WebApiAutores.Controllers
     // permite hacer validaciones automaticas a la informacion que reciba este controlador
     [ApiController]
     [Route("api/autores")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "EsAdmin")]
     // [Route("api/[controller]")] otra opcion para que este placeholder controller se modifique con el nombre del controlador
     public class AutoresController : ControllerBase
     {
