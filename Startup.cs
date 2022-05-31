@@ -97,6 +97,8 @@ namespace WebApiAutores
                     //.WithExposedHeaders() se usa para retornar cabeceras desde nuestro api
                 });
             });
+
+            services.AddDataProtection();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
