@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using WebApiAutores.Filtros;
+using WebApiAutores.Servicios;
 using WebAPIAutores.Middlewares;
 
 namespace WebApiAutores
@@ -99,6 +100,8 @@ namespace WebApiAutores
             });
 
             services.AddDataProtection();
+            // trasient porque este servicio no guarda estado
+            services.AddTransient<HashService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
