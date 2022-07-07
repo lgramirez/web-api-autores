@@ -43,7 +43,7 @@ namespace WebApiAutores.Controllers
             return await context.Autores.FirstOrDefaultAsync();
         }
 
-        [HttpGet] // api/autores
+        [HttpGet(Name = "ObtenerAutores")] // api/autores
         // permitimos que usuarios no autorizados puedan consumir este endpoint
         [AllowAnonymous]
         public async Task<List<AutorDTO>> Get()
@@ -68,7 +68,7 @@ namespace WebApiAutores.Controllers
             return mapper.Map<AutorDTOConLibros>(autor);
         }
 
-        [HttpGet("{nombre}")]
+        [HttpGet("{nombre}", Name = "ObtenerAutorPorNombre")]
         public async Task<ActionResult<List<AutorDTO>>> Get(string nombre)
         {
             var autores = await context.Autores.Where(x => x.Nombre.Contains(nombre)).ToListAsync();
@@ -76,7 +76,7 @@ namespace WebApiAutores.Controllers
             return mapper.Map<List<AutorDTO>>(autores);
         }
 
-        [HttpPost]
+        [HttpPost(Name = "CrearAutor")]
         // usamos async para trabajar mas eficientemente las conexiones con la DB
         // y devolvemos un Task<ActionResult> porque es un requisito para metodos asincronos
         public async Task<ActionResult> Post(AutorCreacionDTO autorCreacionDTO)
@@ -111,7 +111,7 @@ namespace WebApiAutores.Controllers
             return CreatedAtRoute("ObtenerAutor", new { id = autor.Id }, autorDTO);
         }
 
-        [HttpPut("{id:int}")] // api/autores/1
+        [HttpPut("{id:int}", Name = "ActualizarAutor")] // api/autores/1
         public async Task<ActionResult> Put(AutorCreacionDTO autorCreacionDTO, int id)
         {
             var existe = await context.Autores.AnyAsync(x => x.Id == id);
@@ -129,7 +129,7 @@ namespace WebApiAutores.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id:int}")]
+        [HttpDelete("{id:int}", Name = "BorrarAutor")]
         public async Task<ActionResult> Delete(int id)
         {
             var existe = await context.Autores.AnyAsync(x => x.Id == id);
