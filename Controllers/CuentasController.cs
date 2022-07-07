@@ -26,6 +26,7 @@ namespace WebApiAutores.Controllers
         private readonly IDataProtectionProvider dataProtectionProvider;
         private readonly HashService hashService;
         private readonly IDataProtector dataProtector;
+        private static readonly HttpClient client = new HttpClient();
 
         // inyectamos el servicio que nos permite registrar un usuario
         public CuentasController(UserManager<IdentityUser> userManager, IConfiguration configuration, SignInManager<IdentityUser> signInManager,
@@ -94,8 +95,21 @@ namespace WebApiAutores.Controllers
             var usuario = new IdentityUser { UserName = credencialesUsuario.Email, Email = credencialesUsuario.Email };
             var resultado = await userManager.CreateAsync(usuario, credencialesUsuario.Password);
 
+            var values = new Dictionary<string, string>
+            {
+                { "email", credencialesUsuario.Email },
+                { "id", usuario.Id }
+            };
+
+            var content = new FormUrlEncodedContent(values);
+
+
             if (resultado.Succeeded)
             {
+                var response = await client.PostAsync("https://localhost:5001/elsa/activation", content);
+
+                var responseString = await response.Content.ReadAsStringAsync();
+
                 return await ConstruirToken(credencialesUsuario);
             }
             else
@@ -108,6 +122,11 @@ namespace WebApiAutores.Controllers
         public async Task<ActionResult<RespuestaAutenticacion>> Login(CredencialesUsuario credencialesUsuario)
         {
             var resultado = await signInManager.PasswordSignInAsync(credencialesUsuario.Email, credencialesUsuario.Password, isPersistent: false, lockoutOnFailure: false);
+
+            // var usuario = await userManager.FindByEmailAsync(credencialesUsuario.Email);
+            // var claimsDB = await userManager.GetClaimsAsync(usuario);
+
+            // var activo = claimsDB.Where(x => x.Type == "activo").FirstOrDefault();
 
             if (resultado.Succeeded)
             {
@@ -178,6 +197,23 @@ namespace WebApiAutores.Controllers
         {
             var usuario = await userManager.FindByEmailAsync(editarAdminDTO.Email);
             await userManager.RemoveClaimAsync(usuario, new Claim("esAdmin", "1"));
+            return NoContent();
+        }
+
+        [HttpPost("activarCuenta")]
+        public async Task<ActionResult> ActivarCuenta(ActivarCuentaDTO activarCuentaDTO)
+        {
+            var usuario = await userManager.FindByEmailAsync(activarCuentaDTO.Email);
+            await userManager.AddClaimAsync(usuario, new Claim("activo", "1"));
+            return NoContent();
+        }
+
+        [HttpDelete("{userId}")]
+        public async Task<ActionResult> BorrarCuenta(String userId)
+        {
+
+            var usuario = await userManager.FindByIdAsync(userId);
+            await userManager.DeleteAsync(usuario);
             return NoContent();
         }
     }

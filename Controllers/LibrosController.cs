@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using WebApiAutores.Entidades;
 using WebApiAutores.DTOs;
 using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebApiAutores.Controllers
 {
@@ -22,6 +23,14 @@ namespace WebApiAutores.Controllers
         {
             this.context = context;
             this.mapper = mapper;
+        }
+
+        [HttpGet] // api/libros
+        [AllowAnonymous]
+        public async Task<List<LibroDTOConAutores>> Get()
+        {
+            var libros = await context.Libros.Include(libroDB => libroDB.AutoresLibros).ThenInclude(autorLibroDB => autorLibroDB.Autor).ToListAsync();
+            return mapper.Map<List<LibroDTOConAutores>>(libros);
         }
 
         [HttpGet("{id:int}", Name = "ObtenerLibro")]

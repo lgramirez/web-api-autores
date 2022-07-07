@@ -88,13 +88,14 @@ namespace WebApiAutores
             services.AddAuthorization(opciones =>
             {
                 opciones.AddPolicy("EsAdmin", politica => politica.RequireClaim("esAdmin"));
+                opciones.AddPolicy("UsuarioActivo", politica => politica.RequireClaim("activo"));
             });
 
             services.AddCors(opciones =>
             {
                 opciones.AddDefaultPolicy(builder =>
                 {
-                    builder.WithOrigins("https://apirequest.io").AllowAnyMethod().AllowAnyHeader();
+                    builder.WithOrigins("https://apirequest.io", "http://localhost:4000", "https://localhost:5001").AllowAnyMethod().AllowAnyHeader();
                     //.WithExposedHeaders() se usa para retornar cabeceras desde nuestro api
                 });
             });
