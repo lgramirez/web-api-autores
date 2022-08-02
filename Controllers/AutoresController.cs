@@ -23,12 +23,19 @@ namespace WebApiAutores.Controllers
         private readonly ApplicationDbContext context;
         private readonly ILogger<AutoresController> logger;
         private readonly IMapper mapper;
+        private readonly IAuthorizationService authorizationService;
 
-        public AutoresController(ApplicationDbContext context, ILogger<AutoresController> logger, IMapper mapper)
+        public AutoresController(
+            ApplicationDbContext context,
+            ILogger<AutoresController> logger,
+            IMapper mapper,
+            IAuthorizationService authorizationService
+            )
         {
             this.context = context;
             this.logger = logger;
             this.mapper = mapper;
+            this.authorizationService = authorizationService;
         }
 
         [HttpGet("primero")] // api/autores/primero
@@ -46,13 +53,34 @@ namespace WebApiAutores.Controllers
         [HttpGet(Name = "ObtenerAutores")] // api/autores
         // permitimos que usuarios no autorizados puedan consumir este endpoint
         [AllowAnonymous]
-        public async Task<List<AutorDTO>> Get()
+        public async Task<ColeccionDeRecursos<AutorDTO>> Get()
         {
             var autores = await context.Autores.ToListAsync();
-            return mapper.Map<List<AutorDTO>>(autores);
+            var dtos = mapper.Map<List<AutorDTO>>(autores);
+            var esAdmin = await authorizationService.AuthorizeAsync(User, "esAdmin");
+            dtos.ForEach(dto => GenerarEnlaces(dto, esAdmin.Succeeded));
+
+            var resultado = new ColeccionDeRecursos<AutorDTO> { Valores = dtos };
+            resultado.Enlaces.Add(new DatoHATEOAS(
+                enlace: Url.Link("ObtenerAutores", new { }),
+                descripcion: "self",
+                metodo: "GET"
+            ));
+
+            if (esAdmin.Succeeded)
+            {
+                resultado.Enlaces.Add(new DatoHATEOAS(
+                    enlace: Url.Link("CrearAutor", new { }),
+                    descripcion: "crear-autor",
+                    metodo: "POST"
+                ));
+            }
+
+            return resultado;
         }
 
         [HttpGet("{id:int}", Name = "ObtenerAutor")]
+        [AllowAnonymous]
         public async Task<ActionResult<AutorDTOConLibros>> Get(int id)
         {
             var autor = await context.Autores
@@ -66,27 +94,32 @@ namespace WebApiAutores.Controllers
             }
 
             var dto = mapper.Map<AutorDTOConLibros>(autor);
-            GenerarEnlaces(dto);
+            var esAdmin = await authorizationService.AuthorizeAsync(User, "esAdmin");
+            GenerarEnlaces(dto, esAdmin.Succeeded);
             return dto;
         }
 
-        private void GenerarEnlaces(AutorDTO autorDTO)
+        private void GenerarEnlaces(AutorDTO autorDTO, bool esAdmin)
         {
             autorDTO.Enlaces.Add(new DatoHATEOAS(
                 enlace: Url.Link("ObtenerAutor", new { id = autorDTO.Id }),
                 descripcion: "self",
                 metodo: "GET"
             ));
-            autorDTO.Enlaces.Add(new DatoHATEOAS(
-                enlace: Url.Link("ActualizarAutor", new { id = autorDTO.Id }),
-                descripcion: "autor-actualizar",
-                metodo: "PUT"
-            ));
-            autorDTO.Enlaces.Add(new DatoHATEOAS(
-                enlace: Url.Link("BorrarAutor", new { id = autorDTO.Id }),
-                descripcion: "autor-borrar",
-                metodo: "DELETE"
-            ));
+
+            if(esAdmin){
+                autorDTO.Enlaces.Add(new DatoHATEOAS(
+                    enlace: Url.Link("ActualizarAutor", new { id = autorDTO.Id }),
+                    descripcion: "autor-actualizar",
+                    metodo: "PUT"
+                ));
+                autorDTO.Enlaces.Add(new DatoHATEOAS(
+                    enlace: Url.Link("BorrarAutor", new { id = autorDTO.Id }),
+                    descripcion: "autor-borrar",
+                    metodo: "DELETE"
+                ));
+            }
+            
         }
 
         [HttpGet("{nombre}", Name = "ObtenerAutorPorNombre")]
