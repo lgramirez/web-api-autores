@@ -53,30 +53,36 @@ namespace WebApiAutores.Controllers
         [HttpGet(Name = "ObtenerAutores")] // api/autores
         // permitimos que usuarios no autorizados puedan consumir este endpoint
         [AllowAnonymous]
-        public async Task<ColeccionDeRecursos<AutorDTO>> Get()
+        public async Task<IActionResult> Get([FromQuery] bool incluirHATEOAS = true)
         {
             var autores = await context.Autores.ToListAsync();
             var dtos = mapper.Map<List<AutorDTO>>(autores);
-            var esAdmin = await authorizationService.AuthorizeAsync(User, "esAdmin");
-            dtos.ForEach(dto => GenerarEnlaces(dto, esAdmin.Succeeded));
 
-            var resultado = new ColeccionDeRecursos<AutorDTO> { Valores = dtos };
-            resultado.Enlaces.Add(new DatoHATEOAS(
-                enlace: Url.Link("ObtenerAutores", new { }),
-                descripcion: "self",
-                metodo: "GET"
-            ));
-
-            if (esAdmin.Succeeded)
+            if (incluirHATEOAS)
             {
-                resultado.Enlaces.Add(new DatoHATEOAS(
-                    enlace: Url.Link("CrearAutor", new { }),
-                    descripcion: "crear-autor",
-                    metodo: "POST"
-                ));
-            }
+                var esAdmin = await authorizationService.AuthorizeAsync(User, "esAdmin");
+                dtos.ForEach(dto => GenerarEnlaces(dto, esAdmin.Succeeded));
 
-            return resultado;
+                var resultado = new ColeccionDeRecursos<AutorDTO> { Valores = dtos };
+                resultado.Enlaces.Add(new DatoHATEOAS(
+                    enlace: Url.Link("ObtenerAutores", new { }),
+                    descripcion: "self",
+                    metodo: "GET"
+                ));
+
+                if (esAdmin.Succeeded)
+                {
+                    resultado.Enlaces.Add(new DatoHATEOAS(
+                        enlace: Url.Link("CrearAutor", new { }),
+                        descripcion: "crear-autor",
+                        metodo: "POST"
+                    ));
+                }
+
+                return Ok(resultado);  
+            }
+            
+            return Ok(dtos);
         }
 
         [HttpGet("{id:int}", Name = "ObtenerAutor")]
