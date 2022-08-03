@@ -3,11 +3,13 @@ using System.Text;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using WebApiAutores.Filtros;
 using WebApiAutores.Servicios;
+using WebApiAutores.Utilidades;
 using WebAPIAutores.Middlewares;
 
 namespace WebApiAutores
@@ -102,6 +104,9 @@ namespace WebApiAutores
             services.AddDataProtection();
             // trasient porque este servicio no guarda estado
             services.AddTransient<HashService>();
+            services.AddTransient<GeneradorEnlaces>();
+            services.AddTransient<HATEOASAutorFilterAttribute>();
+            services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
