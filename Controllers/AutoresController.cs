@@ -54,36 +54,12 @@ namespace WebApiAutores.Controllers
         [HttpGet(Name = "ObtenerAutores")] // api/autores
         // permitimos que usuarios no autorizados puedan consumir este endpoint
         [AllowAnonymous]
-        public async Task<IActionResult> Get([FromQuery] bool incluirHATEOAS = true)
+        [ServiceFilter(typeof(HATEOASAutorFilterAttribute))]
+        public async Task<ActionResult<List<AutorDTO>>> Get([FromHeader] string incluirHATEOAS)
         {
             var autores = await context.Autores.ToListAsync();
-            var dtos = mapper.Map<List<AutorDTO>>(autores);
-
-            if (incluirHATEOAS)
-            {
-                var esAdmin = await authorizationService.AuthorizeAsync(User, "esAdmin");
-                // dtos.ForEach(dto => GenerarEnlaces(dto, esAdmin.Succeeded));
-
-                var resultado = new ColeccionDeRecursos<AutorDTO> { Valores = dtos };
-                resultado.Enlaces.Add(new DatoHATEOAS(
-                    enlace: Url.Link("ObtenerAutores", new { }),
-                    descripcion: "self",
-                    metodo: "GET"
-                ));
-
-                if (esAdmin.Succeeded)
-                {
-                    resultado.Enlaces.Add(new DatoHATEOAS(
-                        enlace: Url.Link("CrearAutor", new { }),
-                        descripcion: "crear-autor",
-                        metodo: "POST"
-                    ));
-                }
-
-                return Ok(resultado);  
-            }
+            return mapper.Map<List<AutorDTO>>(autores);
             
-            return Ok(dtos);
         }
 
         [HttpGet("{id:int}", Name = "ObtenerAutor")]
@@ -106,7 +82,7 @@ namespace WebApiAutores.Controllers
         }
 
         [HttpGet("{nombre}", Name = "ObtenerAutorPorNombre")]
-        public async Task<ActionResult<List<AutorDTO>>> Get(string nombre)
+        public async Task<ActionResult<List<AutorDTO>>> GetPorNombre(string nombre)
         {
             var autores = await context.Autores.Where(x => x.Nombre.Contains(nombre)).ToListAsync();
 
